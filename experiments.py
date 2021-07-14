@@ -11,12 +11,12 @@ from torchvision.datasets import CIFAR10, MNIST
 
 from utils.train_results import FitResult
 
-from . import LinearNetwork as LN, training
+import LinearNetwork as LN, training
 
 DATA_DIR = os.path.expanduser("~/.pytorch-datasets")
 
 MODEL_TYPES = dict(
-    "fc"=LN.LinearClassifier, "resnet"=torchvision.models.resnet18#, ycn=cnn.YourCodeNet
+    fc=LN.LinearClassifier, resnet=torchvision.models.resnet18#, ycn=cnn.YourCodeNet
 )
 
 
@@ -39,7 +39,7 @@ def run_experiment(
     layers_per_block=2,
     pool_every=2,
     hidden_dims=[1024],
-    model_type="cnn",
+    model_type="fc",
     dataset="mnist",
     # You can add extra configuration for your experiments here
     **kw,
@@ -79,7 +79,10 @@ def run_experiment(
 
     channels = [f for f in filters_per_layer for i in range(layers_per_block)]
     my_args = dict(conv_params=dict(kernel_size=3, stride=1, padding=1), pooling_params=dict(kernel_size=2, stride=2, padding=1))
-    my_model = model_cls(in_size=ds_train[0][0].shape, out_classes=num_classes, channels=channels, pool_every=pool_every, hidden_dims=hidden_dims, **my_args).to(device)
+    if model_type == "fc":
+        my_model = model_cls(in_size=784, out_classes=num_classes, hidden_dims=hidden_dims).to(device)
+    else:
+        my_model = model_cls(in_size=ds_train[0][0].shape, out_classes=num_classes, channels=channels, pool_every=pool_every, hidden_dims=hidden_dims, **my_args).to(device)
 
     opt = torch.optim.Adam(params=my_model.parameters(), lr=lr, weight_decay=reg)
     train_ing = training.TorchTrainer(my_model, loss_fn, opt, device)
