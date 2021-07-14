@@ -30,7 +30,9 @@ class LinearClassifier(nn.Module):
 
     def forward(self, x):
         x = x.reshape(x.size(0), -1) #flatten the input vector (I think flattens to a matrix, might change to only -1 to flatten to a vector)
+        print(f'x-shape:{x.shape}')
         size = x.size(0)*x.size(1)
-        x = x.reshape(1,size)
+        #x = x.reshape(1,size)
+        
         out = self.classifier(x) #FC Classifier
         return out
