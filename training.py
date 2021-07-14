@@ -8,9 +8,6 @@ from torch.utils.data import DataLoader
 
 from utils.train_results import FitResult, BatchResult, EpochResult
 
-from LinearNetwork import LinearClassifier
-
-
 class Trainer(abc.ABC):
     """
     A class abstracting the various tasks of training models.
@@ -97,7 +94,7 @@ class Trainer(abc.ABC):
             test_epoch_result = self.test_epoch(dl_test, verbose=verbose, **kw)
             test_loss.append(sum(test_epoch_result.losses) / len(test_epoch_result.losses))
             test_acc.append(test_epoch_result.accuracy)
-            if actual_num_epochs == 0: #save the first accuracy as best
+            if actual_num_epochs == 0: #save the first accuracy as b`e`st
                 best_acc = test_epoch_result.accuracy
             actual_num_epochs += 1
             epochs_without_improvement += 1
