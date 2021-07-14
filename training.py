@@ -8,6 +8,8 @@ from torch.utils.data import DataLoader
 
 from utils.train_results import FitResult, BatchResult, EpochResult
 
+from LinearNetwork import LinearClassifier
+
 
 class Trainer(abc.ABC):
     """
