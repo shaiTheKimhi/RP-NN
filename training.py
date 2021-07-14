@@ -214,3 +214,41 @@ class Trainer(abc.ABC):
             )
 
         return EpochResult(losses=losses, accuracy=accuracy)
+    
+
+class TorchTrainer(Trainer):
+    def __init__(self, model, loss_fn, optimizer, device=None):
+        super().__init__(model, loss_fn, optimizer, device)
+
+    def train_batch(self, batch) -> BatchResult:
+        X, y = batch
+        if self.device:
+            X = X.to(self.device)
+            y = y.to(self.device)
+
+   
+        
+        preds = self.model(X) #Forward- vec of scores
+        self.optimizer.zero_grad()
+        loss = self.loss_fn(preds, y)
+        loss.backward()
+        self.optimizer.step()
+
+        _, predicted = torch.max(preds, 1)
+        num_correct = torch.eq(y, predicted).sum().item()
+
+        return BatchResult(loss, num_correct)
+
+    def test_batch(self, batch) -> BatchResult:
+        X, y = batch
+        if self.device:
+            X = X.to(self.device)
+            y = y.to(self.device)
+
+        with torch.no_grad():
+            preds = self.model(X)  # Forward- vec of scores
+            loss = self.loss_fn(preds, y).item()
+            _, predicted = torch.max(preds, 1)
+            num_correct = torch.eq(y, predicted).sum().item()
+
+        return BatchResult(loss, num_correct)
