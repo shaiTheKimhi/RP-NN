@@ -8,6 +8,7 @@ import torchviz
 
 #RP layers will be returned through designated functions, will be returned as matrix tensor
 
+#TODO: projection should work for batches as well
 def Gaussian(original_d:int, projected_n:int):
     n = projected_n
     d = original_d
