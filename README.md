@@ -9,5 +9,5 @@ and for what lower dimensions Random projections works.<br/>
 CNNs are comprised of layers of convolutions and linear layers, we will test whether RP initialization for the CNN convolutional layers kernels would yield better results,
 and whether a RP layer after the feature extraction Convolutional layers (and before the FC Linear layers) yields good results
 
-# Databases
+## Databases
 we would examine our work on different datasets as for the Linear NN models, ... (TO BE CONTINUED)
