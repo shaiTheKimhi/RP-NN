@@ -15,14 +15,40 @@ for convenience, we would prefer defining a new layer that calculates gradient o
 #RP layers will be returned through designated functions, will be returned as matrix tensor
 
 #TODO: projection should work for batches as well
-def Gaussian(original_d:int, projected_n:int):
-    n = projected_n
+def Gaussian(original_d:int, projected_k:int):
+    k = projected_n
     d = original_d
-    transformer = random_projection.GaussianRandomProjection(n)
-    return torch.tensor(transformer.fit_transform(torch.eye(d,d)))
-    #return torch.normal(mean=torch.zeros(n,d), std=torch.ones(n,d)/(n*d))
+    
+    #returns P:d->k distributes as N(0,1/k)
+    return torch.normal(mean=torch.zeros(d,k), std=torch.ones(d,k)/k**0.5) # note: 1/k is the variance, 1/k^0.5 is the std
 
-#TODO: add Li(sparse gaussian) and count sketch random projectors
+
+    # transformer = random_projection.GaussianRandomProjection(n)
+    # return torch.tensor(transformer.fit_transform(torch.eye(d,d)))
+
+def Achlioptas(original_d:int, projected_k:int):
+    k = projected_n
+    d = original_d
+    probs = torch.tensor([1/6,2/3,1/6])
+    achl = torch.distribtutions.Categorical(torch.ones(d,k,3)*probs)
+    return (achl.sample()-torch.ones(d,k)) * (3/k)**0.5
+
+
+
+# Li(sparse gaussian) random projection
+def Li(original_d:int, projected_k:int):
+    k = projected_n
+    d = original_d
+    s = d**0.5 #largest bound for s is d/logd, recommended sqrt(d)
+    probs = torch.tensor([1/(2*s),1-1/s,1/(2*s)])
+    dist = torch.distribtutions.Categorical(torch.ones(d,k,3)*probs)
+    return (dist.sample()-torch.ones(d,k)) * (s/k)**0.5
+
+#TODO: add sparse gaussian RP
+
+
+
+#TODO: add count-sketch random dimensionality reduction using sklearn
 
 
 #TODO: add an attempt to create PCA dimensional reduction as the 'optimal' solution for comparsion
