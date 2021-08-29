@@ -2,6 +2,7 @@ import torch
 import torch.nn as nn
 from sklearn import random_projection
 import torchviz
+from scipy.linalg import hadamard
 
 #RP matrix: R of shape (d,n), input vector X of shape (B,d) output: XR of shape (B,n)
 #R is output of the following functions, given a matrix we will define a Linear projection layer
@@ -31,7 +32,7 @@ def Achlioptas(original_d:int, projected_k:int):
     d = original_d
     probs = torch.tensor([1/6,2/3,1/6])
     achl = torch.distribtutions.Categorical(torch.ones(d,k,3)*probs)
-    return (achl.sample()-torch.ones(d,k)) * (3/k)**0.5
+    return (achl.sample()-1) * (3/k)**0.5
 
 
 
@@ -42,9 +43,17 @@ def Li(original_d:int, projected_k:int):
     s = d**0.5 #largest bound for s is d/logd, recommended sqrt(d)
     probs = torch.tensor([1/(2*s),1-1/s,1/(2*s)])
     dist = torch.distribtutions.Categorical(torch.ones(d,k,3)*probs)
-    return (dist.sample()-torch.ones(d,k)) * (s/k)**0.5
+    return (dist.sample()-1) * (s/k)**0.5
 
-#TODO: add sparse gaussian RP
+#SRHT (Li with densifier)
+def SRHT(original_d:int, projected_k:int): #for SRHT d must be a power of 2, if not we can padd the number of features to be a power of 2
+    k = projected_n
+    d = original_d
+
+    B = torch.distribtutions.Bernoulli(torch.ones(d,k)*0.5)
+    D = B.sample()*2 - 1
+    H = ((1/d)**0.5)*hadamard(d)
+    #TODO: return P = DHS
 
 
 
