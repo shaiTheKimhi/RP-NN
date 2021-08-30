@@ -3,21 +3,29 @@ import torch.nn as nn
 import itertools as it
 from typing import Sequence
 
+import RandomProjection as RP
 ACTIVATIONS = {"relu": nn.ReLU, "lrelu": nn.LeakyReLU, "sigmoid": nn.Sigmoid, "tanh": nn.Tanh}
 #POOLINGS = {"avg": nn.AvgPool2d, "max": nn.MaxPool2d}
+PROJECTIONS = {"Gaussian" : RP.Gaussian, "Achlioptas" : RP.Achlioptas, "Li": RP.Li, "SRHT": SRHT } ##TODO: add count-sketch
 
 class LinearClassifier(nn.Module):
     """
     Linear Fully Connected Neural Network model
     """
-    def __init__(self, in_size, out_classes:int, activation_type: str = "relu", activation_params: dict = None, hidden_dims : list = [196, 49]):
+    def __init__(self, in_size, out_classes:int, activation_type: str = "relu", activation_params: dict = None, hidden_dims : list = [196, 49], rp : int = -1, rp_type:str = 'Gaussian'):
         super().__init__()
         self.in_size = in_size
         self.out_classes = out_classes
         self.activation_type = ACTIVATIONS[activation_type]
         self.activation_params = activation_params
-
+        
         layers = []
+        if rp >= 1:
+            W = PROJECTIONS[rp_type](in_size, rp)
+            rplayer = nn.Linear(in_size, rp)
+            rplayer.weight = nn.Parameter(W, requires_grad=False)
+            layers.append(rplayer)
+            self.in_size = rp
         num_features = self.in_size
         for dim in hidden_dims:
             layers.append(nn.Linear(num_features, dim))
@@ -33,6 +41,5 @@ class LinearClassifier(nn.Module):
         print(f'x-shape:{x.shape}')
         size = x.size(0)*x.size(1)
         #x = x.reshape(1,size)
-        
-        out = self.classifier(x) #FC Classifier
+        out = self.classifier(x) #FC Classifier (with RP at start)
         return out

@@ -21,7 +21,7 @@ def Gaussian(original_d:int, projected_k:int):
     d = original_d
     
     #returns P:d->k distributes as N(0,1/k)
-    return torch.normal(mean=torch.zeros(d,k), std=torch.ones(d,k)/k**0.5) # note: 1/k is the variance, 1/k^0.5 is the std
+    return torch.normal(mean=torch.zeros(k,d), std=torch.ones(d,k)/k**0.5) # note: 1/k is the variance, 1/k^0.5 is the std
 
 
     # transformer = random_projection.GaussianRandomProjection(n)
@@ -31,7 +31,7 @@ def Achlioptas(original_d:int, projected_k:int):
     k = projected_n
     d = original_d
     probs = torch.tensor([1/6,2/3,1/6])
-    achl = torch.distribtutions.Categorical(torch.ones(d,k,3)*probs)
+    achl = torch.distribtutions.Categorical(torch.ones(k,d,3)*probs)
     return (achl.sample()-1) * (3/k)**0.5
 
 
@@ -42,7 +42,7 @@ def Li(original_d:int, projected_k:int):
     d = original_d
     s = d**0.5 #largest bound for s is d/logd, recommended sqrt(d)
     probs = torch.tensor([1/(2*s),1-1/s,1/(2*s)])
-    dist = torch.distribtutions.Categorical(torch.ones(d,k,3)*probs)
+    dist = torch.distribtutions.Categorical(torch.ones(k,d,3)*probs)
     return (dist.sample()-1) * (s/k)**0.5
 
 #SRHT (Li with densifier)
@@ -50,7 +50,7 @@ def SRHT(original_d:int, projected_k:int): #for SRHT d must be a power of 2, if 
     k = projected_n
     d = original_d
 
-    B = torch.distribtutions.Bernoulli(torch.ones(d,k)*0.5)
+    B = torch.distribtutions.Bernoulli(torch.ones(k,d)*0.5)
     D = B.sample()*2 - 1
     H = ((1/d)**0.5)*hadamard(d)
     #TODO: return P = DHS
