@@ -22,7 +22,8 @@ def train_and_eval(model,train_iter, valid_iter, optimizer, loss_fn =nn.NLLLoss(
         start_time = time.time()
 
         for train_batch in train_iter:
-            X, y = train_batch.text.cuda(), train_batch.label.cuda()
+            X, y = train_batch
+            X, y  = X.to(device), y.to(device)
 
             # Forward pass
             y_pred_log_proba = model(X)
@@ -52,7 +53,8 @@ def train_and_eval(model,train_iter, valid_iter, optimizer, loss_fn =nn.NLLLoss(
         #evaluate over validation
         with torch.no_grad():
             for val_batch in valid_iter:
-                X, y = val_batch.text.cuda(), val_batch.label.cuda()
+                X, y = val_batch
+                X, y = X.to(device), y.to(device)
                 y = torch.autograd.Variable(y).long()
 
                 y_pred_log_proba = model(X)

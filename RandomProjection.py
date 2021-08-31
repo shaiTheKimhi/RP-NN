@@ -53,6 +53,7 @@ def SRHT(original_d:int, projected_k:int): #for SRHT d must be a power of 2, if 
     B = torch.distribtutions.Bernoulli(torch.ones(k,d)*0.5)
     D = B.sample()*2 - 1
     H = ((1/d)**0.5)*hadamard(d)
+    return D@H
     #TODO: return P = DHS
 
 

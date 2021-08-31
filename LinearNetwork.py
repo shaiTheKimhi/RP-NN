@@ -6,7 +6,7 @@ from typing import Sequence
 import RandomProjection as RP
 ACTIVATIONS = {"relu": nn.ReLU, "lrelu": nn.LeakyReLU, "sigmoid": nn.Sigmoid, "tanh": nn.Tanh}
 #POOLINGS = {"avg": nn.AvgPool2d, "max": nn.MaxPool2d}
-PROJECTIONS = {"Gaussian" : RP.Gaussian, "Achlioptas" : RP.Achlioptas, "Li": RP.Li, "SRHT": SRHT } ##TODO: add count-sketch
+PROJECTIONS = {"Gaussian" : RP.Gaussian, "Achlioptas" : RP.Achlioptas, "Li": RP.Li, "SRHT": RP.SRHT } ##TODO: add count-sketch
 
 class LinearClassifier(nn.Module):
     """
@@ -33,12 +33,12 @@ class LinearClassifier(nn.Module):
             activation = self.activation_type() if self.activation_params is None else self.activation_type(**self.activation_params)
             layers.append(activation)
         layers.append(nn.Linear(num_features, self.out_classes))
+        layers.append(nn.Softmax(dim=1))
         seq = nn.Sequential(*layers)
         self.classifier = seq
 
     def forward(self, x):
         x = x.reshape(x.size(0), -1) #flatten the input vector (I think flattens to a matrix, might change to only -1 to flatten to a vector)
-        print(f'x-shape:{x.shape}')
         size = x.size(0)*x.size(1)
         #x = x.reshape(1,size)
         out = self.classifier(x) #FC Classifier (with RP at start)
