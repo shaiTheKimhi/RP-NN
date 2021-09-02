@@ -21,7 +21,6 @@ def Gaussian(original_d:int, projected_k:int):
     d = original_d
     
     #returns P:d->k distributes as N(0,1/k)
-    print(f'{k}:{d}')
     return torch.normal(mean=torch.zeros(k,d), std=torch.ones(k,d)/k**0.5) # note: 1/k is the variance, 1/k^0.5 is the std
 
 

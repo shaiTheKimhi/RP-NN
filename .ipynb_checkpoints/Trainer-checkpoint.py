@@ -73,7 +73,7 @@ def train_and_eval(model,train_iter, valid_iter, optimizer, loss_fn =nn.NLLLoss(
             best_acc = test_accur[-1]
         
         train_losses.append(train_loss)
-        test_losses.append(num_correct /(total_samples))
+        test_losses.append(total_loss /len(train_iter))
         if save_checkpoint and checkpoint_filename is not None:
             saved_state = dict(best_acc=best_acc,model_state=model.state_dict())
             torch.save(saved_state, checkpoint_filename)
