@@ -6,7 +6,7 @@ from typing import Sequence
 import RandomProjection as RP
 ACTIVATIONS = {"relu": nn.ReLU, "lrelu": nn.LeakyReLU, "sigmoid": nn.Sigmoid, "tanh": nn.Tanh}
 #POOLINGS = {"avg": nn.AvgPool2d, "max": nn.MaxPool2d}
-PROJECTIONS = {"Gaussian" : RP.Gaussian, "Achlioptas" : RP.Achlioptas, "Li": RP.Li, "SRHT": RP.SRHT } ##TODO: add count-sketch
+PROJECTIONS = {"Gaussian" : RP.Gaussian, "Achlioptas" : RP.Achlioptas, "Li": RP.Li, "SRHT": RP.SRHT, "CountSketch": RP.CountSketch} ##TODO: add count-sketch
 
 class LinearClassifier(nn.Module):
     """
