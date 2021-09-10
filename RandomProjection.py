@@ -48,19 +48,19 @@ def Li(original_d:int, projected_k:int):
     return (dist.sample()-1) * (s/k)**0.5
 
 #SRHT (Li with densifier) 
-def SRHT(original_d:int, projected_k:int, dataset_n:int = 6e4): #for SRHT d must be a power of 2, if not we can padd the number of features to be a power of 2
+def SRHT(original_d:int, projected_k:int, dataset_n:int = 12e6): #for SRHT d must be a power of 2, if not we can padd the number of features to be a power of 2
     #TODO: add padding to vector for k to be power of 2
     k = projected_k
     d = original_d
     n = dataset_n
-    q = (math.log(n, 10)**2)/d # q is O(log^2(n)/d) we chose 10 as base of log for convenience
+    q = (math.log(n, 2)**2)/d # q is O(log^2(n)/d) we chose 10 as base of log for convenience
     q = 1 if q > 1 else q if q >= 0 else 0 # q is probability value
 
     B = torch.distributions.Bernoulli(torch.ones(d)*0.5)
     D = torch.diag(B.sample()*2 - 1) # D is d X d
-    H = ((1/d)**0.5)*hadamard(d) # H is d X d, S is d X k
-    S = torch.normal(mean=torch.zeros(k,d), std=torch.ones(k,d)/d**0.5) * torch.distributions.Bernoulli(torch.ones(k,d)*0.5).sample()
-    return S@D@H/k**0.5
+    H = torch.tensor(((1/d)**0.5)*hadamard(d),dtype=torch.float32) # H is d X d
+    S = torch.normal(mean=torch.zeros(d,k), std=torch.ones(d,k)/q**0.5) * torch.distributions.Bernoulli(torch.ones(d,k)*0.5).sample() # S is d X k
+    return S.T@H@D/k**0.5
 
 
 
