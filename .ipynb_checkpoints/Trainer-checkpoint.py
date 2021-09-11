@@ -44,7 +44,6 @@ def train_and_eval(model,train_iter, valid_iter, optimizer, loss_fn =nn.NLLLoss(
 
         train_loss = total_loss /len(train_iter)
         train_acc = num_correct / total_samples
-        
         train_accur.append(num_correct /(total_samples))
         
         total_loss, num_correct = 0, 0
@@ -74,16 +73,16 @@ def train_and_eval(model,train_iter, valid_iter, optimizer, loss_fn =nn.NLLLoss(
         
         train_losses.append(train_loss)
         test_losses.append(total_loss /len(train_iter))
-        if save_checkpoint and checkpoint_filename is not None:
-            saved_state = dict(best_acc=best_acc,model_state=model.state_dict())
-            torch.save(saved_state, checkpoint_filename)
-            if verbose:
-                print(f"*** Saved checkpoint {checkpoint_filename} " f"at epoch {epoch_idx+1}")
-            save_checkpoint = False
+        #if save_checkpoint and checkpoint_filename is not None:
+        #    saved_state = dict(best_acc=best_acc,model_state=model.state_dict())
+        #    torch.save(saved_state, checkpoint_filename)
+        if verbose:
+            print(f"*** Saved checkpoint {checkpoint_filename} " f"at epoch {epoch_idx+1}")
+            #save_checkpoint = False
                
 
-    saved_state = torch.load(checkpoint_filename, map_location=device)
-    model.load_state_dict(saved_state['model_state'])
+    #saved_state = torch.load(checkpoint_filename, map_location=device)
+    #model.load_state_dict(saved_state['model_state'])
     
     return train_accur, test_accur,train_losses,test_losses
         

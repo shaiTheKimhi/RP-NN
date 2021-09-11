@@ -13,7 +13,7 @@ class LinearClassifier(nn.Module):
     """
     Linear Fully Connected Neural Network model
     """
-    def __init__(self, in_size, out_classes:int, activation_type: str = "relu", activation_params: dict = None, hidden_dims : list = [196, 49], rp : int = -1, rp_type:str = 'Gaussian', padding=0):
+    def __init__(self, in_size, out_classes:int, activation_type: str = "relu", activation_params: dict = None, hidden_dims : list = [196, 49], rp : int = -1, rp_type:str = 'Gaussian', padding=0, dropout=0):
         super().__init__()
         self.padding = padding
         self.in_size = in_size
@@ -35,6 +35,7 @@ class LinearClassifier(nn.Module):
             num_features = dim
             activation = self.activation_type() if self.activation_params is None else self.activation_type(**self.activation_params)
             layers.append(activation)
+            layers.append(nn.Dropout(dropout))
         layers.append(nn.Linear(num_features, self.out_classes))
         layers.append(nn.Softmax(dim=1))
         seq = nn.Sequential(*layers)

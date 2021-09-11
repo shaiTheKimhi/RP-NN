@@ -7,12 +7,13 @@ class dataset(): #TODO: decide on inheritance
         self.dir = dir
         files = os.listdir(dir)
         files.remove(labels)
+        files.sort()
         files =  [f for f in files if f not in files_to_ignore]
         D = []
         L = []
         for f in files:
             try:
-                with open(dir + "\\" + f, "r") as source:
+                with open(os.path.join(dir, f), "r") as source:
                     print(f"loading file: {f}")
                     content = source.readlines()
                     content = [line.split("\t") for line in content]
@@ -20,7 +21,7 @@ class dataset(): #TODO: decide on inheritance
                     D.append(content)
             except:
                 continue
-        with open(dir + "\\" + labels, "r") as source:
+        with open(os.path.join(dir, labels), "r") as source:
                 content = source.readlines()
                 content = [line.split("\t") for line in content]
                 content = torch.tensor([[float(c) for c in line] for line in content], dtype=torch.float32)
@@ -40,8 +41,9 @@ class dataset(): #TODO: decide on inheritance
     
     def split(self, ratio:int = 0.5):
         n = self.data[0].shape[0] * ratio
-        train = subdataset(self.data[0][:int(math.floor(n))], self.data[1][:int(math.floor(n))], self.class_num)
-        test =  subdataset(self.data[0][int(math.floor(n)) + 1 : ], self.data[1][int(math.floor(n)) + 1 : ], self.class_num)
+        r = torch.randperm(self.data[0].shape[0])
+        train = subdataset(self.data[0][r[:int(math.floor(n))]], self.data[1][r[:int(math.floor(n))]], self.class_num)
+        test =  subdataset(self.data[0][r[int(math.floor(n)) + 1:]], self.data[1][r[int(math.floor(n)) + 1:]], self.class_num)
         return train,test
     
     def to_type(self, data_type): #changes label data types
@@ -55,7 +57,7 @@ class dataset(): #TODO: decide on inheritance
             if val not in values:
                 values.append(int(val))
             #self.data[1][i][self.class_num] = torch.tensor(values.index(val), dtype=torch.int64)
-        print(values)
+        #print(values)
         for i in range(self.data[1].shape[0]):
             self.data[1][i][self.class_num] = torch.tensor(values.index(int(self.data[1][i][self.class_num])), dtype=torch.int64)
     
