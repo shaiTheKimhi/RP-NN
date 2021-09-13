@@ -85,7 +85,7 @@ class gen_dataset(dataset):
                 values.append(val)
             labels[i][0] = values.index(val)
 
-        self.data = torch.tensor(content), torch.tensor(labels)
+        self.data = torch.tensor(content, dtype=torch.float32), torch.tensor(labels, dtype=torch.int64)
 
 
 
