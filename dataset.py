@@ -67,9 +67,32 @@ class subdataset(dataset):
         self.data = data, labels
         self.class_num = class_num
 
+class gen_dataset(dataset):
+    def __init__(self, data_file = "data.csv" , labels = "labels.csv", classification = 0, dir = "../datasets/TCGA-PANCAN-HiSeq-801x20531"):
+        self.class_num = 0
+        content = []
+        with open(os.path.join(dir,data_file)) as f:
+            lines = f.readlines()
+            content = [line.split(",")[1:] for line in lines[1:]]
+            content = [[float(c) for c in line] for line in content]
+        with open(os.path.join(dir,labels)) as f:
+            lines = f.readlines()
+            labels = [line.split(",")[1:] for line in lines[1:]]
+        values = []
+        for i in range(len(labels)):
+            val = labels[i][0]
+            if val not in values:
+                values.append(val)
+            labels[i][0] = values.index(val)
+
+        self.data = torch.tensor(content), torch.tensor(labels)
+
+
+
     
 if "main" in __name__:
-    d = dataset("../datasets/Hydraulic")
+    #d = dataset("../datasets/Hydraulic")
+    d = gen_dataset()
     a,b = d[0]
-    print(a.shape)
-    print(b)
+    print(d.data[0].shape)
+    print(d.data[1].reshape(801))
