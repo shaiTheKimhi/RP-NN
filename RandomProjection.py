@@ -81,3 +81,13 @@ def CountSketch(original_d: int, projected_k:int):
 
 
 #TODO: add an attempt to create PCA dimensional reduction as the 'optimal' solution for comparsion
+def get_dataset_matrix(dataset):
+    l = []
+    for item in dataset:
+        item = item[0].reshape(item[0].size(0), -1).tolist() #flatten the input and then to list
+        l.append(item)
+    M = torch.tensor(l)
+    return M.reshape(M.shape[0], -1)
+def get_pca(dataset_matrix):
+    return 0
+    

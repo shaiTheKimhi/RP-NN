@@ -81,3 +81,8 @@ def CountSketch(original_d: int, projected_k:int):
 
 
 #TODO: add an attempt to create PCA dimensional reduction as the 'optimal' solution for comparsion
+def get_dataset_matrix(dataset):
+    for item in dataset:
+        
+def get_pca(dataset_matrix):
+    
