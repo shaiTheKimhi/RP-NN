@@ -13,7 +13,8 @@ class LinearClassifier(nn.Module):
     """
     Linear Fully Connected Neural Network model
     """
-    def __init__(self, in_size, out_classes:int, activation_type: str = "relu", activation_params: dict = None, hidden_dims : list = [196, 49], rp : int = -1, rp_type:str = 'Gaussian', padding=0, dropout=0, softmax = True):
+    def __init__(self, in_size, out_classes:int, activation_type: str = "relu", activation_params: dict = None, hidden_dims : list = [196, 49], 
+    rp : int = -1, rp_type:str = 'Gaussian', padding=0, dropout=0, softmax = True, pca = None): #pca is a matrix, activated only when rp=-1
         super().__init__()
         self.padding = padding
         self.in_size = in_size
@@ -22,13 +23,19 @@ class LinearClassifier(nn.Module):
         self.activation_params = activation_params
         in_size += padding
         layers = []
-        if rp >= 1:
+        if rp >= 1: #random projection layer
             W = PROJECTIONS[rp_type](in_size, rp)
             W = torch.tensor(W, dtype=torch.float32)
             rplayer = nn.Linear(in_size, rp)
             rplayer.weight = nn.Parameter(W, requires_grad=False)
             layers.append(rplayer)
             self.in_size = rp
+        elif pca is not None: #pca given projection layer
+            W = pca
+            player = nn.Linear(in_size, W.shape[0]) #projection layer
+            player.weight = nn.Parameter(W, requires_grad=False)
+            layers.append(player)
+            self.in_size = W.shape[0]
         num_features = self.in_size
         for dim in hidden_dims:
             layers.append(nn.Linear(num_features, dim))

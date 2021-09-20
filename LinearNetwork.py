@@ -32,10 +32,10 @@ class LinearClassifier(nn.Module):
             self.in_size = rp
         elif pca is not None: #pca given projection layer
             W = pca
-            player = nn.Linear(in_size, rp) #projection layer
+            player = nn.Linear(in_size, W.shape[0]) #projection layer
             player.weight = nn.Parameter(W, requires_grad=False)
             layers.append(player)
-            self.in_size = W.shape[-1]
+            self.in_size = W.shape[0]
         num_features = self.in_size
         for dim in hidden_dims:
             layers.append(nn.Linear(num_features, dim))
