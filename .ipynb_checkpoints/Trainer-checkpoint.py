@@ -4,6 +4,7 @@ import torch
 import time
 import torch.nn as nn
 import matplotlib.pyplot as plt
+from sklearn import metrics
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 def train_and_eval(model,train_iter, valid_iter, optimizer, loss_fn =nn.NLLLoss() , epochs=20,dir='Models/',name='RNN',data_name = 'FC', verbose=True):
@@ -87,4 +88,52 @@ def train_and_eval(model,train_iter, valid_iter, optimizer, loss_fn =nn.NLLLoss(
     return train_accur, test_accur,train_losses,test_losses
         
         
+def present_accuracy(model, dataloader,classes=3,show=True):
+    model.eval() # put in evaluation mode
+    total_correct = 0
+    total = 0
+    confusion_matrix = np.zeros([classes,classes], int)
+    with torch.no_grad():
+        for data in dataloader:
+            X, y = train_batch
+            X, y  = X.to(device), y.to(device)
+
+            y_pred_log_proba = model(X)
+            predicted = torch.argmax(y_pred_log_proba, dim=1)
+            total += len(data)
+            total_correct += (predicted == y).sum().item()
+            for i, l in enumerate(y):
+                confusion_matrix[l.item(), predicted[i].item()] += 1 
+
+    model_accuracy = total_correct / total * 100
+    print("Test accuracy: {:.3f}%".format(model_accuracy))
+    if show:
+        if classes ==   2:
+            labels = ('0','1')
+        elif classes == 3:
+            labels = ('0','1','2')
+        elif classes == 5:
+            labels = ('0','1','2','3','4')
         
+        fig, ax = plt.subplots(1,1,figsize=(8,6))
+        ax.matshow(confusion_matrix, aspect='auto', vmin=0, vmax=1000, cmap=plt.get_cmap('Blues'))
+        plt.ylabel('Actual Category')
+        plt.yticks(range(classes), labels)
+        plt.xlabel('Predicted Category')
+        plt.xticks(range(classes), labels)
+        plt.show()
+    return model_accuracy
+
+def print_stats(model, dataloader,classes=3):
+    model.eval() # put in evaluation mode
+    trues = []
+    preds = []
+    with torch.no_grad():
+        for data in dataloader:
+            X, y = train_batch
+            X, y  = X.to(device), y.to(device)
+            trues+=list(y.cpu())
+            y_pred_log_proba = model(X)
+            predicted = torch.argmax(y_pred_log_proba, dim=1)
+            preds+= list(predicted.cpu())            
+    print(metrics.classification_report(trues, preds, digits=classes))
