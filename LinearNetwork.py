@@ -51,7 +51,10 @@ class LinearClassifier(nn.Module):
         self.classifier = seq
 
     def forward(self, x): #x of shape (B,1,N,M)
-        x = x.reshape(x.size(0), -1) #flatten the input vector (I think flattens to a matrix, might change to only -1 to flatten to a vector)
+        if len(x.shape) > 3:
+            x = torch.flatten(x,1)
+        else:
+            x = x.reshape(x.size(0), -1) #flatten the input vector (I think flattens to a matrix, might change to only -1 to flatten to a vector)
         if self.padding != 0:
             x = F.pad(x, (1,self.padding-1))##padding input 
         #x = x.reshape(1,size)
