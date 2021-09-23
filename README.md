@@ -7,12 +7,9 @@ we will examine their capabilities as a layer of a Deep ANN with non-linear acti
 and for what lower dimensions Random projections works.<br/>
 We will also test the efficiency of RP layers in comparison to Principle Component Analysis dimensionality reduction layers.<br/>
 
-CNNs are comprised of layers of convolutions and linear layers, we will test whether RP initialization for the CNN convolutional layers kernels would yield better results,
-and whether a RP layer after the feature extraction Convolutional layers (and before the FC Linear layers) yields good results
-
 ## Databases
 We would examine our work on different datasets as for the Linear NN models:
 * MNIST dataset as a small examination of a popular dataset, it is a dataset of small dimension and thus we will use other high-dimensional datasets http://yann.lecun.com/exdb/mnist/.
 * Condition monitoring of hydraulic systems Data Set, with 2205 examples each of 43680 attributes each http://archive.ics.uci.edu/ml/datasets/Condition+monitoring+of+hydraulic+systems.
 * Gas sensor array exposed to turbulent gas mixtures Data Set, with 180 examples of 150000 attributes each http://archive.ics.uci.edu/ml/datasets/Gas+sensor+array+exposed+to+turbulent+gas+mixtures.
-* CIFAR-10 for checking possible improvement on CNNs.
+* CIFAR-10 https://www.cs.toronto.edu/~kriz/cifar.htmls.
