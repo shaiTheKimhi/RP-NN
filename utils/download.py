@@ -37,7 +37,26 @@ def download_data(out_path, url, extract=True, force=False):
         print(f"Extracting {out_filename}...")
         with tarfile.open(out_filename, "r") as tarf:
             members = tarf.getmembers()
-            tarf.extractall(out_path)
+            def is_within_directory(directory, target):
+                
+                abs_directory = os.path.abspath(directory)
+                abs_target = os.path.abspath(target)
+            
+                prefix = os.path.commonprefix([abs_directory, abs_target])
+                
+                return prefix == abs_directory
+            
+            def safe_extract(tar, path=".", members=None, *, numeric_owner=False):
+            
+                for member in tar.getmembers():
+                    member_path = os.path.join(path, member.name)
+                    if not is_within_directory(path, member_path):
+                        raise Exception("Attempted Path Traversal in Tar File")
+            
+                tar.extractall(path, members, numeric_owner=numeric_owner) 
+                
+            
+            safe_extract(tarf, out_path)
             first_dir = next(filter(lambda ti: ti.isdir(), members)).name
             extracted_dir = os.path.join(out_path, os.path.dirname(first_dir))
             print(f"Extracted {len(members)} to {extracted_dir}")
